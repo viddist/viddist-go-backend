@@ -14,8 +14,10 @@ func main() {
 	fmt.Println(link)
 	var clientConfig torrent.Config
 	clientConfig.DataDir = "bt-videos"
+	fmt.Println("making client")
 	client, err := torrent.NewClient(&clientConfig)
 	checkErr(err)
+	fmt.Println("made client")
 	defer client.Close()
 
 	bootStrapUrls := []string{
@@ -24,9 +26,11 @@ func main() {
 		"dht.transmissionbt.com",
 		"dht.aelitis.com",
 	}
-	//client.AddDHTNodes(bootStraps)
+
+	fmt.Println("bootstrapping")
 	bootStrapIps := []string{}
 	for _, url := range bootStrapUrls {
+		fmt.Println("Looking up ip")
 		ip, err := net.LookupIP(url)
 		checkErr(err)
 		bootStrapIps = append(bootStrapIps, ip[0].String())
