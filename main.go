@@ -1,9 +1,12 @@
 package main
 
+/*
+#include <stdlib.h>
+*/
+import "C"
 import (
 	"fmt"
 	"log"
-	"net"
 	"os"
 
 	"github.com/anacrolix/torrent"
@@ -11,33 +14,15 @@ import (
 
 func main() {
 	link := os.Args[1]
-	fmt.Println(link)
-	var clientConfig torrent.Config
-	clientConfig.DataDir = "bt-videos"
-	fmt.Println("making client")
-	client, err := torrent.NewClient(&clientConfig)
+
+	// Redefining the config is sort of broken atm.
+	//var clientConfig torrent.Config
+	//clientConfig.DataDir = "bt-videos"
+	//client, err := torrent.NewClient(&clientConfig)
+
+	client, err := torrent.NewClient(nil)
 	checkErr(err)
-	fmt.Println("made client")
 	defer client.Close()
-
-	bootStrapUrls := []string{
-		"router.utorrent.com",
-		"router.bittorrent.com",
-		"dht.transmissionbt.com",
-		"dht.aelitis.com",
-	}
-
-	fmt.Println("bootstrapping")
-	bootStrapIps := []string{}
-	for _, url := range bootStrapUrls {
-		fmt.Println("Looking up ip")
-		ip, err := net.LookupIP(url)
-		checkErr(err)
-		bootStrapIps = append(bootStrapIps, ip[0].String())
-		fmt.Println("IP:", ip[0])
-	}
-	client.AddDHTNodes(bootStrapIps)
-	fmt.Println("Bootstrapped")
 
 	torr, err := client.AddMagnet(link)
 	checkErr(err)
@@ -51,6 +36,8 @@ func main() {
 	} else {
 		log.Fatal("Did not finish downloading for some reason")
 	}
+
+	fmt.Println(C.random())
 }
 
 func checkErr(err error) {
