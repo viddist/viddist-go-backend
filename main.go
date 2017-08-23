@@ -9,18 +9,24 @@ import (
 	"log"
 	"os"
 
+	"github.com/anacrolix/dht"
 	"github.com/anacrolix/torrent"
 )
 
 func main() {
 	link := os.Args[1]
 
-	// Redefining the config is sort of broken atm.
-	//var clientConfig torrent.Config
-	//clientConfig.DataDir = "bt-videos"
-	//client, err := torrent.NewClient(&clientConfig)
-
-	client, err := torrent.NewClient(nil)
+	addrs, err := dht.GlobalBootstrapAddrs()
+	checkErr(err)
+	var clientConfig torrent.Config
+	var dhtConfig dht.ServerConfig
+	dhtConfig.StartingNodes = addrs
+	clientConfig.DataDir = "bt-videos"
+	clientConfig.DHTConfig = dhtConfig
+	client, err := torrent.NewClient(&clientConfig)
+	// I'm not entirely sure this config is working since eduroam seems
+	// to mess with the dht. Test someplace else.
+	//client, err := torrent.NewClient(nil)
 	checkErr(err)
 	defer client.Close()
 
